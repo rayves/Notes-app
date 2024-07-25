@@ -26,13 +26,17 @@ export default function App() {
   }
 
   function updateNote(text: string): void {
-    setNotes((oldNotes) =>
-      oldNotes.map((oldNote) => {
-        return oldNote.id === currentNoteId
-          ? { ...oldNote, body: text }
-          : oldNote;
-      }),
-    );
+    setNotes((oldNotes) => {
+      const newNotes: Note[] = [];
+      for (const oldNote of oldNotes) {
+        if (oldNote.id === currentNoteId) {
+          newNotes.unshift({ ...oldNote, body: text });
+        } else {
+          newNotes.push(oldNote);
+        }
+      }
+      return newNotes;
+    });
   }
 
   function findCurrentNote(): Note | undefined {

@@ -4,8 +4,8 @@ import Showdown from "showdown"
 import { Note } from "../types"
 
 interface EditorProps {
-    currentNote: Note
-    updateNote: () => void    
+    currentNote: Note | undefined
+    updateNote: (id: string) => void    
 }
 
 export default function Editor({ currentNote, updateNote }: EditorProps) {
@@ -21,7 +21,7 @@ export default function Editor({ currentNote, updateNote }: EditorProps) {
     return (
         <section className="pane editor">
             <ReactMde
-                value={currentNote.body}
+                value={currentNote!.body}
                 onChange={updateNote}
                 selectedTab={selectedTab as "write" | "preview" | undefined }
                 onTabChange={setSelectedTab}

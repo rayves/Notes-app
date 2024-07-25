@@ -2,7 +2,7 @@ import {Note} from "../types"
 
 interface SidebarProps {
     notes: Note[]
-    currentNote: Note
+    currentNote: Note | undefined
     setCurrentNoteId: (id: string) => void
     newNote: () => void
 }
@@ -13,7 +13,7 @@ export default function Sidebar(props: SidebarProps) {
             <div
                 
                 className={`title ${
-                    note.id === props.currentNote.id ? "selected-note" : ""
+                    note.id === props.currentNote!.id ? "selected-note" : ""
                 }`}
                 onClick={() => props.setCurrentNoteId(note.id)}
             >

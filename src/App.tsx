@@ -5,9 +5,10 @@ import Editor from './components/Editor';
 //import data from "./assets/data"
 import Split from 'react-split';
 import { nanoid } from 'nanoid';
-import { Note } from './types';
+import { Note } from './common/types';
 
 export default function App() {
+  // Lazy loading of localStorage.getItem
   const initialNotes: () => Note[] = () =>
     JSON.parse(localStorage.getItem('notes') || '[]') as Note[];
   const [notes, setNotes] = useState<Note[]>(initialNotes);

@@ -1,34 +1,39 @@
-import {Note} from "../types"
+import { Note } from '../common/types';
 
 interface SidebarProps {
-    notes: Note[]
-    currentNote: Note | undefined
-    setCurrentNoteId: (id: string) => void
-    newNote: () => void
+  notes: Note[];
+  currentNote: Note | undefined;
+  setCurrentNoteId: (id: string) => void;
+  newNote: () => void;
 }
 
 export default function Sidebar(props: SidebarProps) {
-    const noteElements = props.notes.map((note, index) => (
-        <div key={note.id}>
-            <div
-                
-                className={`title ${
-                    note.id === props.currentNote!.id ? "selected-note" : ""
-                }`}
-                onClick={() => props.setCurrentNoteId(note.id)}
-            >
-                <h4 className="text-snippet">Note {index + 1}</h4>
-            </div>
-        </div>
-    ))
+  function noteTitle(noteBody: string): string {
+    return noteBody.split('\n')[0].replace(/[#*]/g, '');
+  }
 
-    return (
-        <section className="pane sidebar">
-            <div className="sidebar--header">
-                <h3>Notes</h3>
-                <button className="new-note" onClick={props.newNote}>+</button>
-            </div>
-            {noteElements}
-        </section>
-    )
+  const noteElements = props.notes.map((note) => (
+    <div key={note.id}>
+      <div
+        className={`title ${
+          note.id === props.currentNote!.id ? 'selected-note' : ''
+        }`}
+        onClick={() => props.setCurrentNoteId(note.id)}
+      >
+        <h4 className="text-snippet">{noteTitle(note.body)}</h4>
+      </div>
+    </div>
+  ));
+
+  return (
+    <section className="pane sidebar">
+      <div className="sidebar--header">
+        <h3>Notes</h3>
+        <button className="new-note" onClick={props.newNote}>
+          +
+        </button>
+      </div>
+      {noteElements}
+    </section>
+  );
 }

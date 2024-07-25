@@ -8,9 +8,8 @@ import { nanoid } from 'nanoid';
 import { Note } from './types';
 
 export default function App() {
-  const initialNotes: Note[] = JSON.parse(
-    localStorage.getItem('notes') || '[]',
-  ) as Note[];
+  const initialNotes: () => Note[] = () =>
+    JSON.parse(localStorage.getItem('notes') || '[]') as Note[];
   const [notes, setNotes] = useState<Note[]>(initialNotes);
   const [currentNoteId, setCurrentNoteId] = useState<string>(
     (notes[0] && notes[0].id) || '',

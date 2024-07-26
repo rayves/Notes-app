@@ -5,13 +5,17 @@ import Editor from './components/Editor';
 import Split from 'react-split';
 import { nanoid } from 'nanoid';
 import { Note, ButtonMouseEvent } from './common/types';
-import { onSnapshot } from 'firebase/firestore'; //listens to Firestore database for changes - if there is a change then onSnapshot will update the app accordingly
+import {
+  onSnapshot,
+  QuerySnapshot,
+  DocumentData,
+  QueryDocumentSnapshot,
+} from 'firebase/firestore';
+// listens to Firestore database for changes - if there is a change then onSnapshot will update the app accordingly
+import { notesCollection } from './firebase';
 
 export default function App() {
-  // Lazy loading of localStorage.getItem
-  const initialNotes: () => Note[] = () =>
-    JSON.parse(localStorage.getItem('notes') || '[]') as Note[];
-  const [notes, setNotes] = useState<Note[]>(initialNotes);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [currentNoteId, setCurrentNoteId] = useState<string>(
     notes[0]?.id || '',
   );
@@ -22,8 +26,23 @@ export default function App() {
     }) || notes[0];
 
   useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes));
-  }, [notes]);
+    // snapshot of the data is passed when the callback function is called.
+    // Sync up our local notes array with the snapshot data.
+    // the onSnapshot listener creates a websocket connection with the database
+    // on snapshot returns a function
+    const unsubscribe = onSnapshot(
+      notesCollection,
+      (snapshot: QuerySnapshot<DocumentData>) => {
+        const notesArr = snapshot.docs.map(
+          (doc: QueryDocumentSnapshot<DocumentData>) => ({
+            ...doc.data(),
+            id: doc.id,
+          }),
+        );
+      },
+    );
+    return unsubscribe;
+  }, []);
 
   function createNewNote(): void {
     const newNote: Note = {

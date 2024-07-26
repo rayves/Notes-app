@@ -52,8 +52,9 @@ export default function App() {
     }) || notes[0];
 
   async function createNewNote(): Promise<void> {
-    const newNote: Omit<Note, 'id'> = {
+    const newNote: Omit<Note, 'id' | 'updatedAt'> = {
       body: "# Type your markdown note's title here",
+      createdAt: new Date().valueOf(),
     };
     const newNoteRef = await addDoc(notesCollection, newNote);
     setCurrentNoteId(newNoteRef.id);
@@ -61,7 +62,11 @@ export default function App() {
 
   async function updateNote(text: string): Promise<void> {
     const docRef = await doc(db, 'notes', currentNoteId);
-    await setDoc(docRef, { body: text }, { merge: true });
+    await setDoc(
+      docRef,
+      { body: text, updatedAt: new Date().valueOf() },
+      { merge: true },
+    );
   }
 
   async function deleteNote(noteId: string): Promise<void> {

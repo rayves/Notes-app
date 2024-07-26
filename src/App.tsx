@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import Sidebar from './components/Sidebar';
 import Editor from './components/Editor';
-//import data from "./assets/data"
 import Split from 'react-split';
 import { nanoid } from 'nanoid';
 import { Note, ButtonMouseEvent } from './common/types';
@@ -13,8 +12,13 @@ export default function App() {
     JSON.parse(localStorage.getItem('notes') || '[]') as Note[];
   const [notes, setNotes] = useState<Note[]>(initialNotes);
   const [currentNoteId, setCurrentNoteId] = useState<string>(
-    (notes[0] && notes[0].id) || '',
+    notes[0]?.id || '',
   );
+
+  const currentNote: Note | undefined =
+    notes.find((note) => {
+      return note.id === currentNoteId;
+    }) || notes[0];
 
   useEffect(() => {
     localStorage.setItem('notes', JSON.stringify(notes));
@@ -48,27 +52,19 @@ export default function App() {
     setNotes((prevNotes) => prevNotes.filter((note) => noteId !== note.id));
   }
 
-  function findCurrentNote(): Note | undefined {
-    return (
-      notes.find((note) => {
-        return note.id === currentNoteId;
-      }) || notes[0]
-    );
-  }
-
   return (
     <main>
       {notes.length > 0 ? (
         <Split sizes={[30, 70]} direction="horizontal" className="split">
           <Sidebar
             notes={notes}
-            currentNote={findCurrentNote()}
+            currentNote={currentNote}
             setCurrentNoteId={setCurrentNoteId}
             newNote={createNewNote}
             deleteNote={deleteNote}
           />
           {currentNoteId && notes.length > 0 && (
-            <Editor currentNote={findCurrentNote()} updateNote={updateNote} />
+            <Editor currentNote={currentNote} updateNote={updateNote} />
           )}
         </Split>
       ) : (

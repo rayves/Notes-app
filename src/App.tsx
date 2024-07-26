@@ -12,6 +12,7 @@ import {
   addDoc,
   doc,
   deleteDoc,
+  setDoc,
 } from 'firebase/firestore';
 // listens to Firestore database for changes - if there is a change then onSnapshot will update the app accordingly
 import { notesCollection, db } from './firebase';
@@ -19,11 +20,6 @@ import { notesCollection, db } from './firebase';
 export default function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [currentNoteId, setCurrentNoteId] = useState<string>('');
-
-  const currentNote: Note | undefined =
-    notes.find((note) => {
-      return note.id === currentNoteId;
-    }) || notes[0];
 
   useEffect(() => {
     // snapshot of the data is passed when the callback function is called.
@@ -50,6 +46,11 @@ export default function App() {
     if (!currentNoteId) setCurrentNoteId(notes[0]?.id);
   }, [notes]);
 
+  const currentNote: Note | undefined =
+    notes.find((note) => {
+      return note.id === currentNoteId;
+    }) || notes[0];
+
   async function createNewNote(): Promise<void> {
     const newNote: Omit<Note, 'id'> = {
       body: "# Type your markdown note's title here",
@@ -58,18 +59,9 @@ export default function App() {
     setCurrentNoteId(newNoteRef.id);
   }
 
-  function updateNote(text: string): void {
-    setNotes((oldNotes) => {
-      const newNotes: Note[] = [];
-      for (const oldNote of oldNotes) {
-        if (oldNote.id === currentNoteId) {
-          newNotes.unshift({ ...oldNote, body: text });
-        } else {
-          newNotes.push(oldNote);
-        }
-      }
-      return newNotes;
-    });
+  async function updateNote(text: string): Promise<void> {
+    const docRef = await doc(db, 'notes', currentNoteId);
+    await setDoc(docRef, { body: text }, { merge: true });
   }
 
   async function deleteNote(noteId: string): Promise<void> {

@@ -5,6 +5,7 @@ import Editor from './components/Editor';
 import Split from 'react-split';
 import { nanoid } from 'nanoid';
 import { Note, ButtonMouseEvent } from './common/types';
+import { onSnapshot } from 'firebase/firestore'; //listens to Firestore database for changes - if there is a change then onSnapshot will update the app accordingly
 
 export default function App() {
   // Lazy loading of localStorage.getItem

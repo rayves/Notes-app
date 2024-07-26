@@ -5,6 +5,7 @@ interface SidebarProps {
   currentNote: Note | undefined;
   setCurrentNoteId: (id: string) => void;
   newNote: () => void;
+  deleteNote: (mouseEvent: MouseEvent, id: string) => void;
 }
 
 export default function Sidebar(props: SidebarProps) {
@@ -23,7 +24,7 @@ export default function Sidebar(props: SidebarProps) {
         <h4 className="text-snippet">{noteTitle(note.body)}</h4>
         <button 
                     className="delete-btn"
-                    // Your onClick event handler here
+                    onClick={(event) => props.deleteNote(event, note.id)}
                 >
                     <i className="gg-trash trash-icon"></i>
                 </button>

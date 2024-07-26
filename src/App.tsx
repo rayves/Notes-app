@@ -43,9 +43,10 @@ export default function App() {
     });
   }
 
-  function deleteNote(event, noteId) {
+  function deleteNote(event: MouseEvent, noteId: string) {
     event.stopPropagation();
-    // Your code here
+    console.log(`Note Deleted ${noteId}`)
+    //setNotes(prevNotes => prevNotes.filter(note => noteId != note.id))
   }
 
   function findCurrentNote(): Note | undefined {
@@ -65,6 +66,7 @@ export default function App() {
             currentNote={findCurrentNote()}
             setCurrentNoteId={setCurrentNoteId}
             newNote={createNewNote}
+            deleteNote={deleteNote}
           />
           {currentNoteId && notes.length > 0 && (
             <Editor currentNote={findCurrentNote()} updateNote={updateNote} />

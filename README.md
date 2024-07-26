@@ -1,5 +1,11 @@
 # Notes App
 
+## Start Up
+
+`npm install --legacy-peer-deps` will install dependencies
+
+`npm run dev` will run the project
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

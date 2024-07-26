@@ -1,11 +1,11 @@
-import { Note } from '../common/types';
+import { Note, ButtonMouseEvent } from '../common/types';
 
 interface SidebarProps {
   notes: Note[];
   currentNote: Note | undefined;
   setCurrentNoteId: (id: string) => void;
   newNote: () => void;
-  deleteNote: (mouseEvent: MouseEvent, id: string) => void;
+  deleteNote: (mouseEvent: ButtonMouseEvent, id: string) => void;
 }
 
 export default function Sidebar(props: SidebarProps) {
@@ -22,12 +22,12 @@ export default function Sidebar(props: SidebarProps) {
         onClick={() => props.setCurrentNoteId(note.id)}
       >
         <h4 className="text-snippet">{noteTitle(note.body)}</h4>
-        <button 
-                    className="delete-btn"
-                    onClick={(event) => props.deleteNote(event, note.id)}
-                >
-                    <i className="gg-trash trash-icon"></i>
-                </button>
+        <button
+          className="delete-btn"
+          onClick={(event) => props.deleteNote(event, note.id)}
+        >
+          <i className="gg-trash trash-icon"></i>
+        </button>
       </div>
     </div>
   ));

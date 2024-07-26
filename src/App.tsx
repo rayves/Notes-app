@@ -18,9 +18,7 @@ import { notesCollection, db } from './firebase';
 
 export default function App() {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [currentNoteId, setCurrentNoteId] = useState<string>(
-    notes[0]?.id || '',
-  );
+  const [currentNoteId, setCurrentNoteId] = useState<string>('');
 
   const currentNote: Note | undefined =
     notes.find((note) => {
@@ -47,6 +45,10 @@ export default function App() {
     );
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (!currentNoteId) setCurrentNoteId(notes[0]?.id);
+  }, [notes]);
 
   async function createNewNote(): Promise<void> {
     const newNote: Omit<Note, 'id'> = {
@@ -86,9 +88,7 @@ export default function App() {
             newNote={createNewNote}
             deleteNote={deleteNote}
           />
-          {currentNoteId && notes.length > 0 && (
-            <Editor currentNote={currentNote} updateNote={updateNote} />
-          )}
+          <Editor currentNote={currentNote} updateNote={updateNote} />
         </Split>
       ) : (
         <div className="no-notes">

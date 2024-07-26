@@ -34,11 +34,13 @@ export default function App() {
       notesCollection,
       (snapshot: QuerySnapshot<DocumentData>) => {
         const notesArr = snapshot.docs.map(
-          (doc: QueryDocumentSnapshot<DocumentData>) => ({
-            ...doc.data(),
-            id: doc.id,
-          }),
+          (doc: QueryDocumentSnapshot<DocumentData>) =>
+            ({
+              ...doc.data(),
+              id: doc.id,
+            } as Note),
         );
+        setNotes(notesArr);
       },
     );
     return unsubscribe;

@@ -1,20 +1,24 @@
-import { useState, useEffect } from 'react';
-import './App.css';
-import Sidebar from './components/Sidebar';
-import Editor from './components/Editor';
+import { useState, useEffect } from "react";
+import "./App.css";
+import Sidebar from "./components/Sidebar";
+import Editor from "./components/Editor";
 //import data from "./assets/data"
-import Split from 'react-split';
-import { nanoid } from 'nanoid';
-import { Note } from './common/types';
+import Split from "react-split";
+import { nanoid } from "nanoid";
+import { Note } from "./common/types";
 
 export default function App() {
   // Lazy loading of localStorage.getItem
   const initialNotes: () => Note[] = () =>
-    JSON.parse(localStorage.getItem('notes') || '[]') as Note[];
+    JSON.parse(localStorage.getItem("notes") || "[]") as Note[];
   const [notes, setNotes] = useState<Note[]>(initialNotes);
   const [currentNoteId, setCurrentNoteId] = useState<string>(
-    (notes[0] && notes[0].id) || '',
+    (notes[0] && notes[0].id) || ""
   );
+
+  useEffect(() => {
+    localStorage.setItem("notes", JSON.stringify(notes));
+  }, [notes]);
 
   function createNewNote(): void {
     const newNote: Note = {
@@ -39,6 +43,11 @@ export default function App() {
     });
   }
 
+  function deleteNote(event, noteId) {
+    event.stopPropagation();
+    // Your code here
+  }
+
   function findCurrentNote(): Note | undefined {
     return (
       notes.find((note) => {
@@ -46,10 +55,6 @@ export default function App() {
       }) || notes[0]
     );
   }
-
-  useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes));
-  }, [notes]);
 
   return (
     <main>

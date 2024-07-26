@@ -36,7 +36,7 @@ export default function App() {
               id: doc.id,
             } as Note),
         );
-        setNotes(notesArr);
+        setNotes(notesArr.sort((a, b) => b.updatedAt - a.updatedAt));
       },
     );
     return unsubscribe;
@@ -52,9 +52,10 @@ export default function App() {
     }) || notes[0];
 
   async function createNewNote(): Promise<void> {
-    const newNote: Omit<Note, 'id' | 'updatedAt'> = {
+    const newNote: Omit<Note, 'id'> = {
       body: "# Type your markdown note's title here",
       createdAt: new Date().valueOf(),
+      updatedAt: new Date().valueOf(),
     };
     const newNoteRef = await addDoc(notesCollection, newNote);
     setCurrentNoteId(newNoteRef.id);

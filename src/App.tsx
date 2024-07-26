@@ -3,13 +3,13 @@ import './App.css';
 import Sidebar from './components/Sidebar';
 import Editor from './components/Editor';
 import Split from 'react-split';
-import { nanoid } from 'nanoid';
 import { Note, ButtonMouseEvent } from './common/types';
 import {
   onSnapshot,
   QuerySnapshot,
   DocumentData,
   QueryDocumentSnapshot,
+  addDoc,
 } from 'firebase/firestore';
 // listens to Firestore database for changes - if there is a change then onSnapshot will update the app accordingly
 import { notesCollection } from './firebase';
@@ -46,13 +46,12 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  function createNewNote(): void {
-    const newNote: Note = {
-      id: nanoid(),
+  async function createNewNote(): Promise<void> {
+    const newNote: Omit<Note, 'id'> = {
       body: "# Type your markdown note's title here",
     };
-    setNotes((prevNotes) => [newNote, ...prevNotes]);
-    setCurrentNoteId(newNote.id);
+    const newNoteRef = await addDoc(notesCollection, newNote);
+    setCurrentNoteId(newNoteRef.id);
   }
 
   function updateNote(text: string): void {

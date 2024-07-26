@@ -3,16 +3,18 @@ import './App.css';
 import Sidebar from './components/Sidebar';
 import Editor from './components/Editor';
 import Split from 'react-split';
-import { Note, ButtonMouseEvent } from './common/types';
+import { Note } from './common/types';
 import {
   onSnapshot,
   QuerySnapshot,
   DocumentData,
   QueryDocumentSnapshot,
   addDoc,
+  doc,
+  deleteDoc,
 } from 'firebase/firestore';
 // listens to Firestore database for changes - if there is a change then onSnapshot will update the app accordingly
-import { notesCollection } from './firebase';
+import { notesCollection, db } from './firebase';
 
 export default function App() {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -68,9 +70,9 @@ export default function App() {
     });
   }
 
-  function deleteNote(event: ButtonMouseEvent, noteId: string) {
-    event.stopPropagation();
-    setNotes((prevNotes) => prevNotes.filter((note) => noteId !== note.id));
+  async function deleteNote(noteId: string): Promise<void> {
+    const docRef = await doc(db, 'notes', noteId);
+    await deleteDoc(docRef);
   }
 
   return (

@@ -20,31 +20,7 @@ import { notesCollection, db } from './firebase';
 export default function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [currentNoteId, setCurrentNoteId] = useState<string>('');
-
-  useEffect(() => {
-    // snapshot of the data is passed when the callback function is called.
-    // Sync up our local notes array with the snapshot data.
-    // the onSnapshot listener creates a websocket connection with the database
-    // on snapshot returns a function
-    const unsubscribe = onSnapshot(
-      notesCollection,
-      (snapshot: QuerySnapshot<DocumentData>) => {
-        const notesArr = snapshot.docs.map(
-          (doc: QueryDocumentSnapshot<DocumentData>) =>
-            ({
-              ...doc.data(),
-              id: doc.id,
-            } as Note),
-        );
-        setNotes(notesArr.sort((a, b) => b.updatedAt - a.updatedAt));
-      },
-    );
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    if (!currentNoteId) setCurrentNoteId(notes[0]?.id);
-  }, [notes]);
+  const [tempNoteText, setTempNoteText] = useState<string>('')
 
   const currentNote: Note | undefined =
     notes.find((note) => {
@@ -75,6 +51,42 @@ export default function App() {
     await deleteDoc(docRef);
   }
 
+  useEffect(() => {
+    // snapshot of the data is passed when the callback function is called.
+    // Sync up our local notes array with the snapshot data.
+    // the onSnapshot listener creates a websocket connection with the database
+    // on snapshot returns a function
+    const unsubscribe = onSnapshot(
+      notesCollection,
+      (snapshot: QuerySnapshot<DocumentData>) => {
+        const notesArr = snapshot.docs.map(
+          (doc: QueryDocumentSnapshot<DocumentData>) =>
+            ({
+              ...doc.data(),
+              id: doc.id,
+            } as Note),
+        );
+        setNotes(notesArr.sort((a, b) => b.updatedAt - a.updatedAt));
+      },
+    );
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (!currentNoteId) setCurrentNoteId(notes[0]?.id);
+  }, [notes]);
+
+  useEffect(() => {
+    if (currentNote) setTempNoteText(currentNote.body)
+  }, [currentNote])
+
+  useEffect(() => {
+    const timeoutId: NodeJS.Timeout= setTimeout(() => {
+      if (tempNoteText !== currentNote.body) updateNote(tempNoteText)
+    }, 500)
+    return () => clearTimeout(timeoutId)
+  }, [tempNoteText])
+
   return (
     <main>
       {notes.length > 0 ? (
@@ -86,7 +98,7 @@ export default function App() {
             newNote={createNewNote}
             deleteNote={deleteNote}
           />
-          <Editor currentNote={currentNote} updateNote={updateNote} />
+          <Editor tempNoteText={tempNoteText} setTempNoteText={setTempNoteText} />
         </Split>
       ) : (
         <div className="no-notes">
